@@ -13,10 +13,13 @@ def detail(request, id):
         model = models.Post.objects.get(id=id)
     except Exception:
         raise Http404()
-    form = forms.CommentForm(request.POST if request.method == 'POST' else {'post': model})
-    if form.is_valid():
-        form.save()
-        return redirect('blog-detail', id=id)
+    if request.method == 'POST':
+        form = forms.CommentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('blog-detail', id=id)
+    else:
+        form = forms.CommentForm(initial={'post': model})
     return render(request, 'blog/detail.html', {
         'title': model.title,
         'model': model,
